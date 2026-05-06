@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendar — Trading Journal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-text" font-family="Times New Roman">Trading</span>
+        <span class="logo-text">Journal</span>
+      </div>
+      <nav class="nav-menu">
+        <a href="/" class="nav-link">Dashboard</a>
+        <a href="/calendar.html" class="nav-link active">Calendar</a>
+      </nav>
+      <button class="btn btn-primary" style="visibility: hidden;">+ New Trade</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="filter-bar">
+      <h2 class="section-title">Calendar</h2>
+    </div>
+    <div id="calendar-container" class="calendar-container"></div>
+  </main>
+
+  <script src="/js/calendar.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+com/tradingjournal/model/Trade.class
+com/tradingjournal/model/TradeStats.class
+com/tradingjournal/TradingJournalApplication.class
+com/tradingjournal/controller/TradeController.class
+com/tradingjournal/repository/TradeRepository.class
+com/tradingjournal/service/TradeService.class
