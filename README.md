@@ -50,23 +50,11 @@ trading-journal-springboot/
 
 ## How to Run
 
-### Prerequisites
-- Java 17+
-- Maven 3.8+
+#Backend start:
 
-### Run
-```bash
-cd trading-journal-springboot
-mvn spring-boot:run
-```
+mvn spring-boot:run 
 
-Then open [http://localhost:8080](http://localhost:8080)
+#Frontend
 
-The SQLite database file `trading_journal.db` is created automatically in the working directory on first run.
-
-### Build JAR
-```bash
-mvn clean package
-java -jar target/trading-journal-1.0.0.jar
-```
-# Trading-Journal
+(cd frontend)
+npm run dev
