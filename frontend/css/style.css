@@ -616,3 +616,213 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
 @media (max-width: 420px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* === Strategy Page Layout === */
+.strategy-container {
+  max-width: 1200px;
+  padding: 24px;
+}
+
+.strategy-layout {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .strategy-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.panel-header.canvas-header {
+  margin-bottom: 12px;
+}
+
+.strategy-points-panel, .drawing-canvas-panel {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+/* === Strategy Checklist === */
+.add-point-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.strategy-input {
+  flex: 1;
+}
+
+.points-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.strategy-point {
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.strategy-point.dragging {
+  opacity: 0.5;
+  box-shadow: var(--shadow-lg);
+}
+
+.point-header {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  cursor: grab;
+  gap: 10px;
+}
+.point-header:active {
+  cursor: grabbing;
+}
+.point-drag-handle {
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: inherit;
+}
+.point-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+}
+.point-actions {
+  display: flex;
+  gap: 6px;
+}
+.point-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 14px;
+  padding: 4px;
+  border-radius: 4px;
+}
+.point-btn:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+.sub-points {
+  padding: 0 12px 12px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sub-point {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: grab;
+}
+.sub-point:active { cursor: grabbing; }
+.sub-point-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--text);
+}
+.sub-point-text {
+  font-size: 14px;
+  flex: 1;
+}
+.sub-point-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.sub-point-input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+.sub-point-add-btn {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+/* === Canvas Toolbar & Wrapper === */
+.canvas-actions {
+  display: flex;
+  gap: 8px;
+}
+.canvas-actions .btn {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.canvas-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface-2);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+}
+.tool-group {
+  display: flex;
+  gap: 6px;
+}
+.tool-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+}
+.tool-btn, .stroke-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+}
+.tool-btn:hover, .stroke-btn:hover { background: var(--border); }
+.tool-btn.active, .stroke-btn.active { background: var(--border); box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+.color-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+.color-btn.active {
+  border-color: var(--text);
+  transform: scale(1.1);
+}
+
+.canvas-wrapper {
+  border: 1px solid var(--border);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  overflow: hidden;
+  background: #0f1117; /* Dark background as requested */
+  display: flex;
+  justify-content: center;
+}
+canvas {
+  cursor: crosshair;
+  background: #0f1117;
+}

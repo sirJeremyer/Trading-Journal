@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Strategy — Sir Trading</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-text" font-family="Times New Roman">Sir</span>
+        <span class="logo-text">Trading</span>
+      </div>
+      <nav class="nav-menu">
+        <a href="/" class="nav-link">Dashboard</a>
+        <a href="/calendar.html" class="nav-link">Calendar</a>
+        <a href="/strategy.html" class="nav-link active">Strategy</a>
+      </nav>
+      <button class="btn btn-primary" style="visibility: hidden;">+ New Trade</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container strategy-container">
+    <div class="strategy-layout">
+      <!-- Strategy Points Panel (Left) -->
+      <section class="strategy-points-panel">
+        <div class="panel-header">
+          <h2 class="section-title">Strategy Checklist</h2>
+        </div>
+        
+        <div class="add-point-row">
+          <input type="text" id="newPointInput" placeholder="Add a new strategy point..." class="strategy-input" />
+          <button class="btn btn-primary" id="addPointBtn">Add</button>
+        </div>
+
+        <div id="pointsList" class="points-list">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- Drawing Canvas Panel (Right) -->
+      <section class="drawing-canvas-panel">
+        <div class="panel-header canvas-header">
+          <h2 class="section-title">Trade Setup Sketch</h2>
+          <div class="canvas-actions">
+            <button class="btn btn-ghost" id="clearCanvasBtn" title="Clear Canvas">🗑️ Clear</button>
+            <button class="btn btn-ghost" id="saveCanvasBtn" title="Save as Image">💾 Save PNG</button>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="canvas-toolbar">
+          <div class="tool-group">
+            <button class="tool-btn active" data-tool="pen" title="Pen">✏️</button>
+            <button class="tool-btn" data-tool="line" title="Line">📏</button>
+            <button class="tool-btn" data-tool="rect" title="Rectangle">⬜</button>
+            <button class="tool-btn" data-tool="arrow" title="Arrow">↔️</button>
+            <button class="tool-btn" data-tool="text" title="Text">🔤</button>
+          </div>
+          
+          <div class="tool-divider"></div>
+
+          <div class="tool-group colors" id="colorPickerGroup">
+            <button class="color-btn active" data-color="#ffffff" style="background: #ffffff;"></button>
+            <button class="color-btn" data-color="#ff4444" style="background: #ff4444;"></button>
+            <button class="color-btn" data-color="#00C851" style="background: #00C851;"></button>
+            <button class="color-btn" data-color="#ffbb33" style="background: #ffbb33;"></button>
+            <button class="color-btn" data-color="#33b5e5" style="background: #33b5e5;"></button>
+            <button class="color-btn" data-color="#ff8800" style="background: #ff8800;"></button>
+          </div>
+
+          <div class="tool-divider"></div>
+
+          <div class="tool-group">
+            <button class="stroke-btn" data-stroke="2" title="Thin">➖</button>
+            <button class="stroke-btn active" data-stroke="4" title="Medium"><strong>➖</strong></button>
+            <button class="stroke-btn" data-stroke="8" title="Thick"><strong style="font-size:18px;">➖</strong></button>
+          </div>
+
+          <div class="tool-divider"></div>
+
+          <div class="tool-group">
+            <button class="tool-btn action-btn" id="undoBtn" title="Undo (Ctrl+Z)">↩️</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="sketchCanvas" width="700" height="450"></canvas>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/methods.js"></script>
+  <script src="/js/strategy.js"></script>
+</body>
+
+</html>

@@ -243,3 +243,11 @@ function formatDate(dateStr) {
 function escHtml(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+
+/* === Global Keyboard Shortcuts === */
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key.toLowerCase() === 's' && window.location.pathname !== '/strategy.html') {
+    window.location.href = '/strategy.html';
+  }
+});
