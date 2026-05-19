@@ -33,11 +33,23 @@
 
   <!-- Main Content -->
   <main class="container strategy-container">
-    <div class="strategy-layout">
+    
+    <!-- Top Controls Row & Pinboard -->
+    <div class="strategy-top-controls" style="gap: 8px;">
+      <button class="btn btn-ghost" id="importImageBtn">🖼️ Import Image</button>
+      <input type="file" id="importImageInput" accept="image/*" style="display: none;" />
+      <button class="btn btn-ghost" id="toggleCanvasBtn">📐 Show Canvas</button>
+    </div>
+    <div class="pinboard-row" id="pinboardContainer">
+      <!-- Pinned sketches appear here -->
+    </div>
+
+    <div class="strategy-layout canvas-hidden" id="strategyLayout">
       <!-- Strategy Points Panel (Left) -->
       <section class="strategy-points-panel">
         <div class="panel-header">
           <h2 class="section-title">Strategy Checklist</h2>
+          <button class="btn btn-ghost" id="clearChecksBtn" title="Clear all checkmarks">🔄 Clear Checks</button>
         </div>
         
         <div class="add-point-row">
@@ -48,6 +60,16 @@
         <div id="pointsList" class="points-list">
           <!-- Populated by JS -->
         </div>
+
+        <!-- Trade Commit Panel -->
+        <div class="commit-panel">
+          <div class="commit-title">Commit Trade Session</div>
+          <div class="commit-actions">
+            <button class="commit-btn win" id="commitWinBtn">✅ Win</button>
+            <button class="commit-btn loss" id="commitLossBtn">❌ Loss</button>
+            <button class="commit-btn breakeven" id="commitBEBtn">➖ Break Even</button>
+          </div>
+        </div>
       </section>
 
       <!-- Drawing Canvas Panel (Right) -->
@@ -55,8 +77,9 @@
         <div class="panel-header canvas-header">
           <h2 class="section-title">Trade Setup Sketch</h2>
           <div class="canvas-actions">
+            <button class="btn btn-ghost" id="pinCanvasBtn" title="Pin to Strategy">📌 Pin</button>
             <button class="btn btn-ghost" id="clearCanvasBtn" title="Clear Canvas">🗑️ Clear</button>
-            <button class="btn btn-ghost" id="saveCanvasBtn" title="Save as Image">💾 Save PNG</button>
+            <button class="btn btn-ghost" id="saveCanvasBtn" title="Save as Image">💾 Save</button>
           </div>
         </div>
 
@@ -102,6 +125,21 @@
       </section>
     </div>
   </main>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="toast-notification"></div>
+
+  <!-- Image Lightbox Modal -->
+  <div class="modal-overlay" id="lightboxOverlay">
+    <div class="modal" id="lightboxModal" style="background: transparent; box-shadow: none; max-width: 90vw; border: none;">
+      <div class="modal-header" style="background: transparent; border: none; justify-content: flex-end; padding: 10px;">
+        <button class="modal-close" id="closeLightboxBtn" style="background: var(--surface); color: var(--text); box-shadow: var(--shadow);">✕</button>
+      </div>
+      <div style="text-align: center; padding: 0 20px 20px;">
+        <img id="lightboxImage" src="" style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: var(--radius-sm); box-shadow: var(--shadow-lg);" />
+      </div>
+    </div>
+  </div>
 
   <script src="/js/methods.js"></script>
   <script src="/js/strategy.js"></script>

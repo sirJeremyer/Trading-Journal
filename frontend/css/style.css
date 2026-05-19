@@ -826,3 +826,175 @@ canvas {
   cursor: crosshair;
   background: #0f1117;
 }
+
+/* === Canvas Toggle & Layout === */
+.strategy-top-controls {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+.strategy-layout.canvas-hidden {
+  grid-template-columns: 1fr;
+  max-width: 750px;
+  margin: 0 auto;
+}
+.strategy-layout.canvas-hidden .drawing-canvas-panel {
+  display: none;
+}
+
+/* === Pinboard === */
+.pinboard-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+.pinboard-row:empty {
+  display: none;
+}
+.pinned-sketch {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  width: 160px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pinned-sketch img {
+  width: 100%;
+  height: 90px;
+  object-fit: contain;
+  background: #0f1117;
+  border-radius: 4px;
+  cursor: zoom-in;
+}
+.pinned-sketch-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pinned-sketch-del {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  color: var(--text-muted);
+}
+.pinned-sketch-del:hover {
+  color: var(--loss);
+  border-color: var(--loss);
+}
+
+/* === Bigger Checklist & Checking === */
+.point-title {
+  font-size: 17px !important;
+}
+.sub-point-text {
+  font-size: 15px !important;
+}
+.point-header, .sub-point {
+  transition: all 0.2s ease;
+  cursor: pointer !important; /* Allow clicking the whole row to check */
+}
+.strategy-point.checked .point-title,
+.sub-point.checked .sub-point-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+/* === Point Statistics === */
+.point-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.point-stats {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* === Trade Commit Panel === */
+.commit-panel {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px dashed var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.commit-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  color: var(--text);
+}
+.commit-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+.commit-btn {
+  border: 2px solid var(--border);
+  background: var(--surface);
+  padding: 14px 0;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text);
+}
+.commit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.commit-btn.win:hover { border-color: var(--win); background: var(--win-bg); color: var(--win); }
+.commit-btn.loss:hover { border-color: var(--loss); background: var(--loss-bg); color: var(--loss); }
+.commit-btn.breakeven:hover { border-color: var(--breakeven); background: var(--breakeven-bg); color: var(--breakeven); }
+
+/* === Toast Notification === */
+.toast-notification {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(50px);
+  background: var(--text);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+.toast-notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}

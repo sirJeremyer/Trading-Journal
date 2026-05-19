@@ -1,8 +1,12 @@
 /* === State & Elements === */
 const STORAGE_KEY = 'strategyPoints';
 const CANVAS_KEY = 'strategyCanvas';
+const TRADE_LOG_KEY = 'strategyTradeLog';
+const PINNED_KEY = 'pinnedSketches';
 
 let strategyPoints = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let tradeLog = JSON.parse(localStorage.getItem(TRADE_LOG_KEY)) || [];
+let pinnedSketches = JSON.parse(localStorage.getItem(PINNED_KEY)) || [];
 
 const pointsList = document.getElementById('pointsList');
 const newPointInput = document.getElementById('newPointInput');
@@ -14,11 +18,105 @@ const ctx = canvas.getContext('2d');
 const clearCanvasBtn = document.getElementById('clearCanvasBtn');
 const saveCanvasBtn = document.getElementById('saveCanvasBtn');
 const undoBtn = document.getElementById('undoBtn');
+const pinCanvasBtn = document.getElementById('pinCanvasBtn');
+
+// Layout Elements
+const toggleCanvasBtn = document.getElementById('toggleCanvasBtn');
+const strategyLayout = document.getElementById('strategyLayout');
+const pinboardContainer = document.getElementById('pinboardContainer');
+const importImageBtn = document.getElementById('importImageBtn');
+const importImageInput = document.getElementById('importImageInput');
+
+// Lightbox Elements
+const lightboxOverlay = document.getElementById('lightboxOverlay');
+const closeLightboxBtn = document.getElementById('closeLightboxBtn');
+const lightboxImage = document.getElementById('lightboxImage');
+
+// Commit Elements
+const clearChecksBtn = document.getElementById('clearChecksBtn');
+const commitWinBtn = document.getElementById('commitWinBtn');
+const commitLossBtn = document.getElementById('commitLossBtn');
+const commitBEBtn = document.getElementById('commitBEBtn');
+const toastNotification = document.getElementById('toastNotification');
 
 // Toolbar Elements
 const toolBtns = document.querySelectorAll('.tool-btn[data-tool]');
 const colorBtns = document.querySelectorAll('.color-btn');
 const strokeBtns = document.querySelectorAll('.stroke-btn');
+
+
+/* === UI & Logic Integrations === */
+
+// Toggle Canvas
+toggleCanvasBtn.addEventListener('click', () => {
+  strategyLayout.classList.toggle('canvas-hidden');
+  const isHidden = strategyLayout.classList.contains('canvas-hidden');
+  toggleCanvasBtn.textContent = isHidden ? '📐 Show Canvas' : '📐 Hide Canvas';
+});
+
+// Toast
+function showToast(msg) {
+  toastNotification.textContent = msg;
+  toastNotification.classList.add('show');
+  setTimeout(() => toastNotification.classList.remove('show'), 3000);
+}
+
+// Pinned Sketches
+function renderPinnedSketches() {
+  pinboardContainer.innerHTML = '';
+  pinnedSketches.forEach((sketch, idx) => {
+    const div = document.createElement('div');
+    div.className = 'pinned-sketch';
+    div.innerHTML = `
+      <div class="pinned-sketch-del" data-idx="${idx}">✕</div>
+      <img src="${sketch.dataUrl}" />
+      <div class="pinned-sketch-label" title="${sketch.label}">${sketch.label}</div>
+    `;
+    
+    const img = div.querySelector('img');
+    img.addEventListener('click', () => {
+      lightboxImage.src = sketch.dataUrl;
+      lightboxOverlay.classList.add('active');
+    });
+
+    div.querySelector('.pinned-sketch-del').addEventListener('click', () => {
+      if(confirm('Delete this pinned image?')) {
+        pinnedSketches.splice(idx, 1);
+        localStorage.setItem(PINNED_KEY, JSON.stringify(pinnedSketches));
+        renderPinnedSketches();
+      }
+    });
+    pinboardContainer.appendChild(div);
+  });
+}
+renderPinnedSketches();
+
+// Import Image
+importImageBtn.addEventListener('click', () => importImageInput.click());
+importImageInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const label = prompt('Enter a label for this imported image:', file.name);
+      if (label !== null) {
+        pinnedSketches.push({ label: label || 'Imported Image', dataUrl: ev.target.result });
+        localStorage.setItem(PINNED_KEY, JSON.stringify(pinnedSketches));
+        renderPinnedSketches();
+        showToast('Image pinned!');
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+  importImageInput.value = ''; // Reset input
+});
+
+// Lightbox Logic
+closeLightboxBtn.addEventListener('click', () => lightboxOverlay.classList.remove('active'));
+lightboxOverlay.addEventListener('click', (e) => {
+  if (e.target === lightboxOverlay) lightboxOverlay.classList.remove('active');
+});
+
 
 /* === Checklist Logic === */
 
@@ -28,6 +126,17 @@ function savePoints() {
 
 function renderPoints() {
   pointsList.innerHTML = '';
+  
+  // Calculate point statistics from tradeLog
+  const pointStats = {};
+  tradeLog.forEach(log => {
+    log.checkedPoints.forEach(pt => {
+      if (!pointStats[pt]) pointStats[pt] = { total: 0, wins: 0 };
+      pointStats[pt].total++;
+      if (log.outcome === 'win') pointStats[pt].wins++;
+    });
+  });
+
   strategyPoints.forEach((point, pIndex) => {
     const pointEl = document.createElement('div');
     pointEl.className = 'strategy-point';
@@ -41,25 +150,53 @@ function renderPoints() {
     pointEl.addEventListener('dragenter', e => e.preventDefault());
     pointEl.addEventListener('dragend', handleDragEnd);
 
+    // Stats formatting
+    const rawTitle = point.title.trim();
+    const stats = pointStats[rawTitle];
+    const statsStr = stats 
+      ? `Checked: ${stats.total} &times; | Win rate: ${Math.round(stats.wins/stats.total*100)}%` 
+      : 'No data yet';
+
     // Header
     const headerEl = document.createElement('div');
     headerEl.className = 'point-header';
     headerEl.innerHTML = `
       <span class="point-drag-handle">☰</span>
-      <span class="point-title">📌 ${point.title}</span>
+      <div class="point-title-wrapper">
+        <span class="point-title">📌 ${point.title}</span>
+        <span class="point-stats">${statsStr}</span>
+      </div>
       <div class="point-actions">
+        <button class="point-btn edit-btn" title="Edit Point">✏️</button>
         <button class="point-btn toggle-btn" title="Toggle Sub-points">${point.collapsed ? '▼' : '▲'}</button>
         <button class="point-btn delete-btn" title="Delete Point">❌</button>
       </div>
     `;
     
-    headerEl.querySelector('.toggle-btn').addEventListener('click', () => {
+    // Check toggle
+    headerEl.querySelector('.point-title-wrapper').addEventListener('click', (e) => {
+      pointEl.classList.toggle('checked');
+    });
+
+    headerEl.querySelector('.edit-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const newTitle = prompt('Rename Strategy Point:', point.title);
+      if (newTitle && newTitle.trim()) {
+        point.title = newTitle.trim();
+        savePoints();
+        renderPoints();
+      }
+    });
+
+    headerEl.querySelector('.toggle-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
       point.collapsed = !point.collapsed;
       savePoints();
       renderPoints();
     });
 
-    headerEl.querySelector('.delete-btn').addEventListener('click', () => {
+    headerEl.querySelector('.delete-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
       if (confirm('Delete this strategy point?')) {
         strategyPoints.splice(pIndex, 1);
         savePoints();
@@ -75,6 +212,12 @@ function renderPoints() {
       subListEl.className = 'sub-points';
 
       (point.subPoints || []).forEach((sub, sIndex) => {
+        const subRaw = sub.trim();
+        const subStats = pointStats[subRaw];
+        const subStatsStr = subStats 
+          ? `Checked: ${subStats.total} &times; | Win rate: ${Math.round(subStats.wins/subStats.total*100)}%` 
+          : 'No data yet';
+
         const subEl = document.createElement('div');
         subEl.className = 'sub-point';
         subEl.draggable = true;
@@ -90,11 +233,37 @@ function renderPoints() {
 
         subEl.innerHTML = `
           <input type="checkbox" class="sub-point-checkbox" />
-          <span class="sub-point-text">${sub}</span>
+          <div class="point-title-wrapper">
+            <span class="sub-point-text">${sub}</span>
+            <span class="point-stats">${subStatsStr}</span>
+          </div>
+          <button class="point-btn edit-sub-btn" title="Edit Sub-point">✏️</button>
           <button class="point-btn delete-sub-btn" title="Delete Sub-point">❌</button>
         `;
 
-        subEl.querySelector('.delete-sub-btn').addEventListener('click', () => {
+        // Check toggle (either click checkbox or text)
+        const cb = subEl.querySelector('.sub-point-checkbox');
+        subEl.querySelector('.point-title-wrapper').addEventListener('click', (e) => {
+          subEl.classList.toggle('checked');
+          cb.checked = subEl.classList.contains('checked');
+        });
+        cb.addEventListener('change', () => {
+          if (cb.checked) subEl.classList.add('checked');
+          else subEl.classList.remove('checked');
+        });
+
+        subEl.querySelector('.edit-sub-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          const newTitle = prompt('Rename Sub-point:', sub);
+          if (newTitle && newTitle.trim()) {
+            point.subPoints[sIndex] = newTitle.trim();
+            savePoints();
+            renderPoints();
+          }
+        });
+
+        subEl.querySelector('.delete-sub-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
           point.subPoints.splice(sIndex, 1);
           savePoints();
           renderPoints();
@@ -222,6 +391,43 @@ newPointInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') addPointBtn.click();
 });
 
+
+/* === Trade Commit Logic === */
+
+function clearAllChecks() {
+  document.querySelectorAll('.checked').forEach(el => el.classList.remove('checked'));
+  document.querySelectorAll('.sub-point-checkbox').forEach(cb => cb.checked = false);
+}
+
+clearChecksBtn.addEventListener('click', clearAllChecks);
+
+function commitTrade(outcome) {
+  const checkedEls = document.querySelectorAll('.checked');
+  const checkedPoints = [];
+  
+  checkedEls.forEach(el => {
+    if (el.classList.contains('strategy-point')) {
+      checkedPoints.push(el.querySelector('.point-title').textContent.replace('📌 ', '').trim());
+    } else if (el.classList.contains('sub-point')) {
+      checkedPoints.push(el.querySelector('.sub-point-text').textContent.trim());
+    }
+  });
+  
+  tradeLog.push({ outcome, checkedPoints, timestamp: new Date().toISOString() });
+  localStorage.setItem(TRADE_LOG_KEY, JSON.stringify(tradeLog));
+  
+  clearAllChecks();
+  renderPoints(); // update stats
+  
+  const outcomeLabels = { 'win': 'Win ✅', 'loss': 'Loss ❌', 'breakeven': 'Break Even ➖' };
+  showToast(`Trade committed as ${outcomeLabels[outcome]}`);
+}
+
+commitWinBtn.addEventListener('click', () => commitTrade('win'));
+commitLossBtn.addEventListener('click', () => commitTrade('loss'));
+commitBEBtn.addEventListener('click', () => commitTrade('breakeven'));
+
+
 renderPoints();
 
 
@@ -261,6 +467,17 @@ function loadCanvasState() {
     undoStack = [canvas.toDataURL()];
   }
 }
+
+// Pin Canvas
+pinCanvasBtn.addEventListener('click', () => {
+  const label = prompt('Enter a label for this sketch:');
+  if (label) {
+    pinnedSketches.push({ label, dataUrl: canvas.toDataURL() });
+    localStorage.setItem(PINNED_KEY, JSON.stringify(pinnedSketches));
+    renderPinnedSketches();
+    showToast('Sketch pinned!');
+  }
+});
 
 // Event Listeners for Toolbar
 toolBtns.forEach(btn => {
